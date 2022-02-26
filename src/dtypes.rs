@@ -127,8 +127,20 @@ impl Matrix {
     /// assert_eq!(m2.rows, 2);
     /// assert_eq!(m2.cols, 1);
     /// assert_eq!(m2.data, vec![50, 122]);
-    pub fn dot_vector(&self, other: Vec<f64>) {
-
+    pub fn dot_vector(&self, other: Vec<f64>) -> Result<Vec<f64>, String> {
+        if self.cols != other.len() {
+            return Err(
+                format!("Cannot dot a [{} by {}] matrix with a vector of length {} (Shape error)",
+                               self.rows,
+                               self.cols,
+                               other.len()));
+        }
+        let mut output_vector = vec![0.0; self.rows];
+        for row in self.data.iter() {
+            let dot_product = dot_product(row, &other);
+            output_vector.push(dot_product);
+        }
+        Ok(output_vector)
     }
 
     /// Returns the transpose of the matrix
