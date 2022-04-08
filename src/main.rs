@@ -13,6 +13,7 @@ fn main() {
     let a_var = Variable::new_no_gradients(3.0);
     let b_var = Variable::new_no_gradients(5.0);
     println!("{:?}", a_var * b_var);
+    println!("{:?}", Variable::new_no_gradients(9.0) / Variable::new_no_gradients(3.0));
     // let m = Matrix::new(vec![
     //     vec![1.0, 2.0, 3.0],
     //     vec![4.0, 5.0, 6.0]]).unwrap();
