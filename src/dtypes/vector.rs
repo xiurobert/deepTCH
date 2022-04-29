@@ -25,3 +25,14 @@ pub fn dot_product(a: &[f64], b: &[f64]) -> f64 {
     }
     tally
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_dot_product() {
+        let a = vec![1.0, 2.0, 3.0];
+        let b = vec![4.0, 5.0, 6.0];
+        let c = super::dot_product(&a, &b);
+        assert_eq!(c, 32.0);
+    }
+}

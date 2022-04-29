@@ -14,16 +14,4 @@ fn main() {
     let b_var = Variable::new_no_gradients(5.0);
     println!("{:?}", a_var * b_var);
     println!("{:?}", Variable::new_no_gradients(9.0) / Variable::new_no_gradients(3.0));
-    // let m = Matrix::new(vec![
-    //     vec![1.0, 2.0, 3.0],
-    //     vec![4.0, 5.0, 6.0]]).unwrap();
-    // let m_transposed = Matrix::new(vec![
-    //     vec![1.0, 4.0],
-    //     vec![2.0, 5.0],
-    //     vec![3.0, 6.0]]).unwrap();
-    // println!("Matrix: {:?}", &m);
-    // assert_eq!(m_transposed, Matrix::transpose(&m));
-    // println!("Transposed: {:?}", &m_transposed);
-    // // Now attempt to dot them
-    // println!("Dot product of m and m_transposed: {:?}", &m.dot(&m_transposed));
 }
