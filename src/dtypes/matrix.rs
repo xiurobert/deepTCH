@@ -1,3 +1,6 @@
+use random::Source;
+
+#[derive(Debug)]
 pub struct Matrix {
     pub rows: usize,
     pub cols: usize,
@@ -39,18 +42,57 @@ impl Matrix {
         }
     }
 
+    pub fn ones(rows: usize, cols: usize) -> Matrix {
+        let mut data = Vec::new();
+        for _i in 0..rows {
+            let mut row = Vec::new();
+            for _j in 0..cols {
+                row.push(1.0);
+            }
+            data.push(row);
+        }
+        Matrix {
+            rows,
+            cols,
+            data
+        }
+    }
+
+    pub fn random(rows: usize, cols: usize) -> Matrix {
+        // make the source configurable
+        let mut source = random::default().seed([1, 1]);
+        let mut data = Vec::new();
+        for _i in 0..rows {
+            data.push(source.iter().take(cols).collect::<Vec<f64>>());
+        }
+        Matrix {
+            rows,
+            cols,
+            data
+        }
+    }
+
+
     /// Constructs a new matrix from a vector of data.
-    pub fn new(data: Vec<Vec<f64>>) -> Matrix {
+    /// The matrix is checked to ensure that the dimensions are correct.
+    ///
+    /// If the dimensions are incorrect, an error is returned.
+    ///
+    /// # Arguments
+    /// * `data`: A Vec<Vec<f64>> containing your data.
+    ///
+    pub fn new(data: Vec<Vec<f64>>) -> Result<Matrix, String> {
         let rows = data.len();
         let cols = data[0].len();
-        // TODO: Check that the matrix is actually a matrix.
-        let mut m = Matrix::zeros(rows, cols);
-        for i in 0..rows {
-            for j in 0..cols {
-                m.set(i, j, data[i][j]);
+        for (i, row) in data.iter().enumerate() {
+            if row.len() != cols {
+                return Err(format!("Row {} has {} elements, but row 0 has {} elements.",
+                                   i, row.len(), cols));
             }
         }
-        m
+        let mut m = Matrix::zeros(rows, cols);
+        m.data = data;
+        Ok(m)
     }
 
     /// Retrieves the value at the given row and column.
@@ -87,6 +129,7 @@ impl Matrix {
     pub fn matmul(&self, other: &Matrix) -> Matrix {
         assert_eq!(self.cols, other.rows);
         let mut result = Matrix::zeros(self.rows, other.cols);
+        // Note: I can't remmeber correctly, but I believe there was a MUCH faster way to do matmul
         for i in 0..self.rows {
             for j in 0..other.cols {
                 for k in 0..self.cols {
@@ -111,16 +154,30 @@ impl Matrix {
 
 }
 
+
 #[cfg(test)]
 mod tests {
     use crate::dtypes::matrix::Matrix;
 
     #[test]
+    fn test_weird_matrix() {
+        let m = Matrix::new(vec![vec![1.0]]).unwrap();
+        assert_eq!(m.data, vec![vec![1.0]]);
+    }
+
+    #[test]
+    fn test_invalid_matrix() {
+        let m = Matrix::new(vec![vec![1.0], vec![2.0, 3.0]]);
+        // println!("{:?}", m);
+        assert!(m.is_err());
+    }
+
+    #[test]
     fn test_matmul() {
         let m = Matrix::new(vec![vec![1.0, 2.0],
-                                 vec![3.0, 4.0]]);
+                                 vec![3.0, 4.0]]).unwrap();
         let n = Matrix::new(vec![vec![5.0, 6.0],
-                                 vec![7.0, 8.0]]);
+                                 vec![7.0, 8.0]]).unwrap();
         let p = m.matmul(&n);
         assert_eq!(p.data, vec![vec![19.0, 22.0],
                                 vec![43.0, 50.0]]);
@@ -129,14 +186,14 @@ mod tests {
     #[test]
     fn test_get() {
         let m = Matrix::new(vec![vec![1.0, 2.0],
-                                 vec![3.0, 4.0]]);
+                                 vec![3.0, 4.0]]).unwrap();
         assert_eq!(m.get(1, 1), 4.0);
     }
 
     #[test]
     fn test_set() {
         let mut m = Matrix::new(vec![vec![1.0, 2.0],
-                                     vec![3.0, 4.0]]);
+                                     vec![3.0, 4.0]]).unwrap();
         m.set(1, 1, 69.0);
         assert_eq!(m.get(1, 1), 69.0);
     }
@@ -144,7 +201,7 @@ mod tests {
     #[test]
     fn test_transpose() {
         let m = Matrix::new(vec![vec![1.0, 2.0],
-                                 vec![3.0, 4.0]]);
+                                 vec![3.0, 4.0]]).unwrap();
         let p = m.transpose();
         assert_eq!(p.data, vec![vec![1.0, 3.0],
                                 vec![2.0, 4.0]]);

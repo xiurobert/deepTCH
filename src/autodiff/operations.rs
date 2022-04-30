@@ -57,7 +57,7 @@ impl ops::Div<Variable> for Variable {
 
 #[cfg(test)]
 mod tests {
-    use crate::Variable;
+    use super::Variable;
 
     #[test]
     fn test_add() {
