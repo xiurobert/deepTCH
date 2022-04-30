@@ -7,6 +7,16 @@ pub fn linspace(start: f64, end: f64, n: usize) -> Vec<f64> {
     result
 }
 
+pub fn arange(start: f64, end: f64, step: f64) -> Vec<f64> {
+    let mut result = Vec::new();
+    let mut i = start;
+    while i < end {
+        result.push(i);
+        i += step;
+    }
+    result
+}
+
 mod test {
     use super::*;
 
@@ -21,4 +31,11 @@ mod test {
     //     let result = logspace(0.0, 4.0, 5, 2.0);
     //     assert_eq!(result, vec![1.0, 2.0, 4.0, 8.0, 16.0]);
     // }
+    #[test]
+    fn test_arange() {
+        let result_a = arange(0.0, 4.0, 1.0);
+        let result_b = arange(2.0, 5.0, 2.0);
+        assert_eq!(result_b, vec![2.0, 4.0]);
+        assert_eq!(result_a, vec![0.0, 1.0, 2.0, 3.0]);
+    }
 }
