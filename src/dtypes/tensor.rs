@@ -42,12 +42,12 @@ impl Tensor {
     }
 
     pub fn get(&self, pos: &[usize]) -> f64 {
-        let mut idx = 0;
-        // todo: fix this since it won't work obviously
-        for (i, loc) in pos.iter().enumerate() {
-            idx += loc * (i+1);
+        let mut index = 0;
+        // todo: fix broken tests
+        for i in 0..pos.len() {
+            index += pos[i] * (self.shape[i] as usize)
         }
-        self.data[idx as usize]
+        self.data[index]
     }
 
     pub fn set(&mut self, pos: &[i32], data: f64) {
@@ -57,6 +57,8 @@ impl Tensor {
 
 #[cfg(test)]
 mod tests {
+    use deep_tch::arange;
+
     #[test]
     fn test_make_zeros() {
         let tens_zeros = super::Tensor::zeros(&[2, 3]);
@@ -74,14 +76,14 @@ mod tests {
     #[test]
     fn test_get_mat() {
         let tens = super::Tensor::new(&[4, 2],
-                                      &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-        assert_eq!(tens.get(&[1,1 ]), 4.0);
+                                      &arange!(8.0));
+        assert_eq!(tens.get(&[1,1]), 4.0);
     }
 
     #[test]
     fn test_get_3d() {
-        let tens = super::Tensor::new(&[2,3,3],
-                                      &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0]);
-        assert_eq!(tens.get(&[1,2,3]), 6.0);
+        let tens = super::Tensor::new(&[2,3,4],
+                                      &arange!(24.0));
+        assert_eq!(tens.get(&[1,2,3]), 24.0);
     }
 }

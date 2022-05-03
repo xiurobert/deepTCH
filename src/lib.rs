@@ -17,6 +17,16 @@ pub fn arange(start: f64, end: f64, step: f64) -> Vec<f64> {
     result
 }
 
+#[macro_export]
+macro_rules! arange {
+    ($end: expr) => {
+        arange(0.0, $end, 1.0)
+    };
+    ($start: expr, $end: expr) => {
+        arange($start, $end, 1.0)
+    }
+}
+
 mod test {
     use super::*;
 
@@ -37,5 +47,23 @@ mod test {
         let result_b = arange(2.0, 5.0, 2.0);
         assert_eq!(result_b, vec![2.0, 4.0]);
         assert_eq!(result_a, vec![0.0, 1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn test_arange_macro() {
+        let result_a = arange!(4.0);
+        assert_eq!(result_a, vec![0.0, 1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn test_arange_macro_2() {
+        let result_a = arange!(1.0, 5.0);
+        assert_eq!(result_a, vec![1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn test_weird_arange() {
+        let result_a = arange(1.0, 1.0, 1.0);
+        assert_eq!(result_a, vec![]);
     }
 }
