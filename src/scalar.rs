@@ -1,5 +1,3 @@
-use crate::autodiff::Variable;
-
 struct Scalar {
     value: f64,
 }
@@ -22,4 +20,15 @@ fn central_difference(f: &dyn Fn(&[f64]) -> f64, values: &Vec<f64>, arg: usize, 
     v_cl[arg] += 2.0 * eps;
     let result = f(&v_cl);
     Ok((result - initial) / (2.0 * eps))
+}
+
+
+struct TakesTwoArgs;
+
+trait TakesOneArg {
+    fn forward(&self, a: f64) -> f64;
+}
+
+trait TakesTwoArg {
+    fn forward(&self, a: f64, b: f64) -> f64;
 }
