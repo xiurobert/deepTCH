@@ -9,7 +9,7 @@ struct Scalar {
 /// * `values` - The values that the function accepts
 /// * `arg` - The index of the argument to differentiate with respect to
 /// * `eps` - The step size to use when approximating the derivative. Usually 1e-6.
-fn central_difference(f: &dyn Fn(&[f64]) -> f64, values: &Vec<f64>, arg: usize, eps: &f64) -> Result<f64, String> {
+pub fn central_difference(f: &dyn Fn(&[f64]) -> f64, values: &Vec<f64>, arg: usize, eps: &f64) -> Result<f64, String> {
     if arg >= values.len() {
         return Err(String::from("Argument out of bounds"));
     }
@@ -31,4 +31,33 @@ trait TakesOneArg {
 
 trait TakesTwoArg {
     fn forward(&self, a: f64, b: f64) -> f64;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use proptest::prelude::*;
+    use crate::math_ops::is_close;
+    proptest! {
+        #[test]
+        fn test_central_difference(vals in proptest::collection::vec(prop::num::f64::NORMAL, 1..100)) {
+            let eps = 1e-6;
+            let arg = 0usize;
+            let f = |x: &[f64]| x[arg];
+            let vals_copy = vals.clone();
+            if let Ok(result) = central_difference(&f, &vals, arg, &eps) {
+                let mut vals_copy = vals_copy;
+                vals_copy[arg] -= eps;
+                let initial = f(&vals_copy);
+                vals_copy[arg] += 2.0 * eps;
+                let result = f(&vals_copy);
+                let expected = (result - initial) / (2.0 * eps);
+                assert!(is_close(result, expected));
+            } else {
+                panic!("Why");
+            }
+        }
+
+
+    }
 }
