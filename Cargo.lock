@@ -46,6 +46,7 @@ name = "deep_tch"
 version = "0.1.0"
 dependencies = [
  "proptest",
+ "rand",
  "random",
 ]
 

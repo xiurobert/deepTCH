@@ -38,7 +38,7 @@ mod tests {
         #[test]
         fn test_central_difference(vals in proptest::collection::vec(prop::num::f64::NORMAL, 1..100)) {
             let eps = 1e-6;
-            let arg = 0usize; // Chosen by fair dice roll. Guaranteed to be random.
+            let arg = rand::thread_rng().gen_range(0..vals.len());
             let f = |x: &[f64]| x[arg];
             let vals_copy = vals.clone();
             if let Ok(result) = central_difference(&f, &vals, arg, &eps) {
