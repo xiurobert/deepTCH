@@ -22,15 +22,11 @@ pub fn central_difference(f: &dyn Fn(&[f64]) -> f64, values: &Vec<f64>, arg: usi
     Ok((result - initial) / (2.0 * eps))
 }
 
+struct Context;
 
-struct TakesTwoArgs;
-
-trait TakesOneArg {
-    fn forward(&self, a: f64) -> f64;
-}
-
-trait TakesTwoArg {
-    fn forward(&self, a: f64, b: f64) -> f64;
+trait AutoDifferentiable {
+    fn forward(&self, ctx: Context, values: &Vec<f64>) -> Result<f64, String>;
+    fn backward(&self, ctx: Context, values: &Vec<f64>, grad_output: f64) -> Result<Vec<f64>, String>;
 }
 
 #[cfg(test)]
@@ -42,7 +38,7 @@ mod tests {
         #[test]
         fn test_central_difference(vals in proptest::collection::vec(prop::num::f64::NORMAL, 1..100)) {
             let eps = 1e-6;
-            let arg = 0usize;
+            let arg = 0usize; // Chosen by fair dice roll. Guaranteed to be random.
             let f = |x: &[f64]| x[arg];
             let vals_copy = vals.clone();
             if let Ok(result) = central_difference(&f, &vals, arg, &eps) {
@@ -50,8 +46,8 @@ mod tests {
                 vals_copy[arg] -= eps;
                 let initial = f(&vals_copy);
                 vals_copy[arg] += 2.0 * eps;
-                let result = f(&vals_copy);
-                let expected = (result - initial) / (2.0 * eps);
+                let res2 = f(&vals_copy);
+                let expected = (res2 - initial) / (2.0 * eps);
                 assert!(is_close(result, expected));
             } else {
                 panic!("Why");
