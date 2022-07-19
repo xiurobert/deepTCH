@@ -25,8 +25,8 @@ pub fn central_difference(f: &dyn Fn(&[f64]) -> f64, values: &Vec<f64>, arg: usi
 struct Context;
 
 trait AutoDifferentiable {
-    fn forward(&self, ctx: Context, values: &Vec<f64>) -> Result<f64, String>;
-    fn backward(&self, ctx: Context, values: &Vec<f64>, grad_output: f64) -> Result<Vec<f64>, String>;
+    fn forward(&self, ctx: Context, values: &[f64]) -> Result<f64, String>;
+    fn backward(&self, ctx: Context, values: &[f64], grad_output: f64) -> Result<Vec<f64>, String>;
 }
 
 #[cfg(test)]
