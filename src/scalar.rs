@@ -22,7 +22,19 @@ pub fn central_difference(f: &dyn Fn(&[f64]) -> f64, values: &Vec<f64>, arg: usi
     Ok((result - initial) / (2.0 * eps))
 }
 
-struct Context;
+struct Context {
+    pub saved_values: Vec<Scalar>,
+    pub no_grad: bool
+}
+
+impl Context {
+    fn new() -> Context {
+        Context {
+            saved_values: Vec::new(),
+            no_grad: false
+        }
+    }
+}
 
 trait AutoDifferentiable {
     fn forward(&self, ctx: Context, values: &[f64]) -> Result<f64, String>;
